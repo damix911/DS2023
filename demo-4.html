@@ -168,9 +168,20 @@
           constraints: {
             snapToZoom: false,
           },
-          scale: 15000,
-          rotation: -90,
+          scale: 15000000,
+          rotation: 0,
           center: [-1.0147, 52.0733]
+        });
+        
+        view.on("click", () => {
+          view.goTo({
+            scale: 15000,
+            rotation: -90
+          },
+          {
+            animate: true,
+            duration: 2000
+          })
         });
 
         const points = [];

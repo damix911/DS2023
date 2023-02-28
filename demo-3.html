@@ -108,16 +108,24 @@
         const view = new MapView({
           container: "viewDiv",
           map: map,
-          zoom: 6,
+          scale: 10000000,
           center: [8.2275, 46.8182]
         });
 
-        view.on("click", () => {
+        view.on("click", (evt) => {
+          const mapPoint = view.toMap(evt);
           const query = countries.createQuery();
-          query.where = "COUNTRY='Switzerland'";
+          query.geometry = mapPoint;
+          query.spatialRelationship = "intersects";
           query.returnGeometry = true;
           countries.queryFeatures(query).then((featureSet) => {
-            highlight(featureSet.features[0]);
+            const feature = featureSet.features[0];
+            
+            if (!feature) {
+              return;
+            }
+
+            highlight(feature);
           });
         });
       });

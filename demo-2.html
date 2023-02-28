@@ -18,21 +18,42 @@
     <script src="https://js.arcgis.com/4.26/"></script>
 
     <script>
-      require(["esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/layers/VectorTileLayer", "esri/Basemap"], (Map, MapView, FeatureLayer, VectorTileLayer, Basemap) => {
-        const star = [];
+      require(["esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/layers/VectorTileLayer", "esri/Basemap", "esri/layers/TileLayer"], (Map, MapView, FeatureLayer, VectorTileLayer, Basemap, TileLayer) => {
+        const symbolLayers = [];
 
-        for (let i = 0; i <= 10; i++) {
-          const radius = i % 2 ? 2 : 3;
-          const radians = 2 * Math.PI * i / 10;
+        const primeNumbers = [2, 3, 5, 7, 11, 13, 17, 19];
 
-          star.push([
-            radius * Math.sin(radians),
-            radius * Math.cos(radians)
-          ]);
+        for (let i = primeNumbers.length - 1; i >= 0; i--) {
+          symbolLayers.push({
+            "type": "CIMPictureMarker",
+            "enable": true,
+            "anchorPointUnits": "Relative",
+            "dominantSizeAxis3D": "Y",
+            "size": 8,
+            "billboardMode3D": "FaceNearPlane",
+            "markerPlacement": {
+              "type": "CIMMarkerPlacementAlongLineSameSize",
+              "placePerPart": true,
+              "angleToLine": false,
+              "endings": "NoConstraint",
+              "placementTemplate": [
+                4 + primeNumbers[i]
+              ]
+            },
+            "invertBackfaceTexture": true,
+            "scaleX": 1,
+            "textureFilter": "Picture",
+            "url": "images/fire.gif",
+            tintColor: [50 + i * 20, 50 + i * 20, 50 + i * 20, 255],
+            animatedSymbolProperties: {
+              startTimeOffset: i / 5
+            }
+          });
         }
-
+        
         const featureLayer = new FeatureLayer({
-          effect: "bloom(0.5, 0.1px, 15%)",
+          url: "https://services2.arcgis.com/FiaPA4ga0iQKduv3/arcgis/rest/services/Earthquake_Faults_and_Folds_in_the_USA/FeatureServer",
+          effect: "bloom(1.6, 1px, 0)",
           renderer: {
             type: "simple",
             symbol: {
@@ -41,95 +62,27 @@
                 type: "CIMSymbolReference",
                 symbol: {
                   type: "CIMLineSymbol",
-                  symbolLayers: [
-                    {
-                      "type": "CIMPictureMarker",
-                      "enable": true,
-                      "anchorPointUnits": "Relative",
-                      "dominantSizeAxis3D": "Y",
-                      "size": 24.75,
-                      "billboardMode3D": "FaceNearPlane",
-                      "markerPlacement": {
-                        "type": "CIMMarkerPlacementAlongLineSameSize",
-                        "placePerPart": true,
-                        "angleToLine": false,
-                        "endings": "NoConstraint",
-                        "placementTemplate": [
-                          15
-                        ]
-                      },
-                      "invertBackfaceTexture": true,
-                      "scaleX": 1,
-                      "textureFilter": "Picture",
-                      "tintColor": [
-                        255,
-                        255,
-                        255,
-                        255
-                      ],
-                      "url": "images/fire.gif",
-                      animatedSymbolProperties: {
-                        primitiveName: "Transfer"
-                      }
-                    }
-                  ]
-                },
-                primitiveOverrides: [
-                  {
-                    type: "CIMPrimitiveOverride",
-                    primitiveName: "Transfer",
-                    propertyName: "Duration",
-                    valueExpressionInfo: {
-                      type: "CIMExpressionInfo",
-                      expression: "1 / (0.1 + $feature.TransferRate)"
-                    }
-                  }
-                ]
-              }
-            }
-          },
-          source: [
-            {
-              geometry: {
-                type: "polyline",
-                paths: [
-                  [
-                    [10.7522, 59.9139],
-                    [11.7522, 58.9139],
-                    [13.7522, 57.9139],
-                    [14.7522, 55.9139],
-                    [10.7522, 53.9139]
-                  ]
-                ],
-                spatialReference: {
-                  wkid: 4326
+                  symbolLayers
                 }
-              },
-              attributes: {
-                OID: 1,
-                TransferRate: 1,
-                Name: "Some name..."
               }
-            },
-          ],
-          objectIdField: "OID",
-          fields: [
-            {
-              name: "TransferRate",
-              type: "double"
-            },
-            {
-              name: "StartDelay",
-              type: "double"
             }
-          ]
+          }
+        });
+
+        const imageryLayer = new TileLayer({
+          url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer",
+          effect: "brightness(40%)"
+        });
+
+        const vectorTileLayer = new VectorTileLayer({
+          opacity: 0.5,
+          url: "https://www.arcgis.com/sharing/rest/content/items/5e9b3685f4c24d8781073dd928ebda50/resources/styles/root.json"
         });
 
         const basemap = new Basemap({
           baseLayers: [
-            new VectorTileLayer({
-              url: "https://www.arcgis.com/sharing/rest/content/items/5e9b3685f4c24d8781073dd928ebda50/resources/styles/root.json"
-            })
+            imageryLayer,
+            vectorTileLayer
           ]
         });
 
@@ -141,8 +94,8 @@
         const view = new MapView({
           container: "viewDiv",
           map: map,
-          zoom: 4,
-          center: [15, 60]
+          scale: 100000,
+          center: [-120.8, 35.1]
         });
       });
     </script>
