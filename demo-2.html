@@ -54,6 +54,7 @@
         const featureLayer = new FeatureLayer({
           url: "https://services2.arcgis.com/FiaPA4ga0iQKduv3/arcgis/rest/services/Earthquake_Faults_and_Folds_in_the_USA/FeatureServer",
           effect: "bloom(1.6, 1px, 0)",
+          blendMode: "normal",
           renderer: {
             type: "simple",
             symbol: {
