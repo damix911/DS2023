@@ -18,121 +18,108 @@
     <script src="https://js.arcgis.com/4.26/"></script>
 
     <script>
-      require(["esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/layers/VectorTileLayer", "esri/Basemap", "esri/geometry/geometryEngine"], (Map, MapView, FeatureLayer, VectorTileLayer, Basemap, geometryEngine) => {
+      require(["esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/layers/VectorTileLayer", "esri/layers/TileLayer", "esri/Basemap", "esri/Graphic"], (Map, MapView, FeatureLayer, VectorTileLayer, TileLayer, Basemap, Graphic) => {
         const countries = new FeatureLayer({
           url: "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/World_Countries_(Generalized)/FeatureServer"
         });
 
-        const query = countries.createQuery();
-        query.where = "COUNTRY='Switzerland'";
-        query.returnGeometry = true;
-        countries.queryFeatures(query).then((featureSet) => {
-          surroundByArrows(featureSet.features[0]);
-        });
-
-        async function surroundByArrows(feature) {
-          const geometry = feature.geometry;//geometryEngine.buffer(geometryEngine.generalize(feature.geometry, 20000), 30000);
-
-          const featureLayer = new FeatureLayer({
-            effect: "bloom(0.5, 0.1px, 15%)",
-            renderer: {
-              type: "simple",
-              symbol: {
-                type: "cim",
-                data: {
-                  type: "CIMSymbolReference",
-                  symbol: {
-                    type: "CIMLineSymbol",
-                    symbolLayers: [
-                      {
-                        "type": "CIMPictureMarker",
-                        "enable": true,
-                        "anchorPointUnits": "Relative",
-                        "dominantSizeAxis3D": "Y",
-                        "size": 8,
-                        "billboardMode3D": "FaceNearPlane",
-                        "markerPlacement": {
-                          "type": "CIMMarkerPlacementAlongLineSameSize",
-                          "placePerPart": true,
-                          "angleToLine": true,
-                          "endings": "NoConstraint",
-                          "placementTemplate": [
-                            1
-                          ]
-                        },
-                        "invertBackfaceTexture": true,
-                        "scaleX": 1,
-                        "textureFilter": "Picture",
-                        "tintColor": [
-                          210,
-                          230,
-                          250,
-                          40
-                        ],
-                        "url": "images/pulse.gif",
-                        animatedSymbolProperties: {
-                          primitiveName: "Transfer"
-                        }
-                      }
+        const outlineSymbol = {
+          type: "cim",
+          data: {
+            type: "CIMSymbolReference",
+            symbol: {
+              type: "CIMLineSymbol",
+              symbolLayers: [
+                {
+                  "type": "CIMPictureMarker",
+                  "enable": true,
+                  "anchorPointUnits": "Relative",
+                  "dominantSizeAxis3D": "Y",
+                  "size": 8,
+                  "billboardMode3D": "FaceNearPlane",
+                  "markerPlacement": {
+                    "type": "CIMMarkerPlacementAlongLineSameSize",
+                    "placePerPart": true,
+                    "angleToLine": true,
+                    "endings": "NoConstraint",
+                    "placementTemplate": [
+                      1
                     ]
                   },
-                  primitiveOverrides: [
-                    {
-                      type: "CIMPrimitiveOverride",
-                      primitiveName: "Transfer",
-                      propertyName: "Duration",
-                      valueExpressionInfo: {
-                        type: "CIMExpressionInfo",
-                        expression: "1 / (0.1 + $feature.TransferRate)"
-                      }
-                    }
-                  ]
+                  "invertBackfaceTexture": true,
+                  "scaleX": 1,
+                  "textureFilter": "Picture",
+                  "tintColor": [
+                    210,
+                    230,
+                    250,
+                    40
+                  ],
+                  "url": "images/pulse.gif"
                 }
-              }
-            },
-            source: [
-              {
-                geometry,
-                attributes: {
-                  OID: 1,
-                  TransferRate: 1,
-                  Name: "Some name..."
-                }
-              },
-            ],
-            objectIdField: "OID",
-            fields: [
-              {
-                name: "TransferRate",
-                type: "double"
-              },
-              {
-                name: "StartDelay",
-                type: "double"
-              }
-            ]
+              ]
+            }
+          }
+        };
+
+        const fillSymbol = {
+          type: "simple-fill",
+          color: "rgba(255, 255, 255, 0.2)"
+        };
+
+        async function highlight(feature) {
+          const { geometry } = feature;
+
+          const fill = new Graphic({
+            geometry,
+            symbol: fillSymbol
+          })
+          
+          const outline = new Graphic({
+            geometry,
+            symbol: outlineSymbol
           });
 
-          const basemap = new Basemap({
-            baseLayers: [
-              new VectorTileLayer({
-                url: "https://www.arcgis.com/sharing/rest/content/items/5e9b3685f4c24d8781073dd928ebda50/resources/styles/root.json"
-              })
-            ]
-          });
-
-          const map = new Map({
-            basemap,
-            layers: [featureLayer]
-          });
-
-          const view = new MapView({
-            container: "viewDiv",
-            map: map,
-            zoom: 6,
-            center: [8.2275, 46.8182]
-          });
+          view.graphics.removeAll();
+          view.graphics.addMany([fill, outline]);
         }
+
+        const imageryLayer = new TileLayer({
+          url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer",
+          effect: "brightness(40%)"
+        });
+
+        const vectorTileLayer = new VectorTileLayer({
+          opacity: 0.7,
+          url: "https://www.arcgis.com/sharing/rest/content/items/c11ce4f7801740b2905eb03ddc963ac8/resources/styles/root.json"
+        });
+
+        const basemap = new Basemap({
+          baseLayers: [
+            imageryLayer,
+            vectorTileLayer
+          ]
+        });
+
+        const map = new Map({
+          basemap
+        });
+
+        const view = new MapView({
+          container: "viewDiv",
+          map: map,
+          zoom: 6,
+          center: [8.2275, 46.8182]
+        });
+
+        view.on("click", () => {
+          const query = countries.createQuery();
+          query.where = "COUNTRY='Switzerland'";
+          query.returnGeometry = true;
+          countries.queryFeatures(query).then((featureSet) => {
+            highlight(featureSet.features[0]);
+          });
+        });
       });
     </script>
   </head>
