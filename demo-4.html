@@ -1,0 +1,206 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>Animated CIM Markers</title>
+    <style>
+      html,
+      body,
+      #viewDiv {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+      }
+    </style>
+
+    <link rel="stylesheet" href="https://js.arcgis.com/4.26/esri/themes/light/main.css" />
+    <script src="https://js.arcgis.com/4.26/"></script>
+
+    <script>
+      require([
+        "esri/Map",
+        "esri/views/MapView",
+        "esri/layers/FeatureLayer",
+        "esri/layers/VectorTileLayer",
+        "esri/layers/TileLayer",
+        "esri/Basemap",
+        "esri/layers/MediaLayer",
+        "esri/layers/support/ImageElement",
+        "esri/layers/support/ControlPointsGeoreference",
+        "esri/geometry/Point"
+      ], (
+        Map,
+        MapView,
+        FeatureLayer,
+        VectorTileLayer,
+        TileLayer,
+        Basemap,
+        MediaLayer,
+        ImageElement,
+        ControlPointsGeoreference,
+        Point
+      ) => {
+        const p1 = {
+          sourcePoint: { x: 103, y: 287 },
+          mapPoint: new Point({ x: -112621.4753091779 - 10, y: 6814414.635010252 + 10, spatialReference: { wkid: 3857 } })
+        };
+
+        const p2 = {
+          sourcePoint: { x: 1247, y: 1127 },
+          mapPoint: new Point({ x: -113992.56450407869 + 10, y: 6812193.183875641 + 20, spatialReference: { wkid: 3857 } })
+        };
+
+        const p3 = {
+          sourcePoint: { x: 805, y: 395 },
+          mapPoint: new Point({ x: -112702.68965173334 - 10, y: 6813098.484929426, spatialReference: { wkid: 3857 } })
+        };
+
+        const p4 = {
+          sourcePoint: { x: 1589, y: 767 },
+          mapPoint: new Point({ x: -113278.35602102136, y: 6811612.740192077, spatialReference: { wkid: 3857 } })
+        };
+
+        const controlPoints = [p1, p2, p3, p4];
+
+        const georeference = new ControlPointsGeoreference({ controlPoints, width: 1665, height: 1200 });
+        
+        const silverstoneTrack = new ImageElement({
+          image: "images/silverstone.png",
+          georeference
+        });
+
+        // add the video element to the media layer
+        const mediaLayer = new MediaLayer({
+          effect: "bloom(0.4, 1px, 0)",
+          source: [silverstoneTrack],
+          title: "2017 Hurricanes and Aerosols Simulation",
+          copyright: "NASA's Goddard Space Flight Center"
+        });
+        
+        const featureLayer = new FeatureLayer({
+          effect: "brightness(200%) bloom(2.5, 0.1px, 15%)",
+          renderer: {
+            type: "simple",
+            symbol: {
+              type: "cim",
+              data: {
+                type: "CIMSymbolReference",
+                symbol: {
+                  type: "CIMPointSymbol",
+                  symbolLayers: [
+                    {
+                      "type": "CIMPictureMarker",
+                      "enable": true,
+                      "anchorPointUnits": "Relative",
+                      "dominantSizeAxis3D": "Y",
+                      "size": 8,
+                      "billboardMode3D": "FaceNearPlane",
+                      "invertBackfaceTexture": true,
+                      "scaleX": 1,
+                      "textureFilter": "Picture",
+                      "tintColor": [
+                        210,
+                        230,
+                        250,
+                        40
+                      ],
+                      "url": "images/flash.gif",
+                      animatedSymbolProperties: {
+                        primitiveName: "FlashTime"
+                      }
+                    }
+                  ]
+                },
+                primitiveOverrides: [
+                  {
+                    type: "CIMPrimitiveOverride",
+                    primitiveName: "FlashTime",
+                    propertyName: "StartTimeOffset",
+                    valueExpressionInfo: {
+                      type: "CIMExpressionInfo",
+                      expression: "100 - $feature.time / 100",
+                      duration: 1
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          source: [{"geometry":{"type":"point","x":-113920.69236254481,"y":6812526.960832237,"spatialReference":3857},"attributes":{"OID":0,"Time":1}},{"geometry":{"type":"point","x":-113847.93180035702,"y":6812620.094351838,"spatialReference":3857},"attributes":{"OID":1,"Time":2}},{"geometry":{"type":"point","x":-113751.88785826914,"y":6812742.332096313,"spatialReference":3857},"attributes":{"OID":2,"Time":3}},{"geometry":{"type":"point","x":-113679.12729608135,"y":6812841.286460889,"spatialReference":3857},"attributes":{"OID":3,"Time":4}},{"geometry":{"type":"point","x":-113606.36673389355,"y":6812928.599135514,"spatialReference":3857},"attributes":{"OID":4,"Time":5}},{"geometry":{"type":"point","x":-113521.96448175571,"y":6812998.449275214,"spatialReference":3857},"attributes":{"OID":5,"Time":6}},{"geometry":{"type":"point","x":-113408.45800474276,"y":6813027.55350009,"spatialReference":3857},"attributes":{"OID":6,"Time":7}},{"geometry":{"type":"point","x":-113251.29519041714,"y":6813024.643077603,"spatialReference":3857},"attributes":{"OID":7,"Time":8}},{"geometry":{"type":"point","x":-113184.35547320437,"y":6813015.911810139,"spatialReference":3857},"attributes":{"OID":8,"Time":9}},{"geometry":{"type":"point","x":-113091.22195360399,"y":6813059.568147453,"spatialReference":3857},"attributes":{"OID":9,"Time":10}},{"geometry":{"type":"point","x":-113009.73012395366,"y":6813100.314062278,"spatialReference":3857},"attributes":{"OID":10,"Time":11}},{"geometry":{"type":"point","x":-112945.70082922842,"y":6813158.522512028,"spatialReference":3857},"attributes":{"OID":11,"Time":12}},{"geometry":{"type":"point","x":-112867.1194220656,"y":6813222.551806753,"spatialReference":3857},"attributes":{"OID":12,"Time":13}},{"geometry":{"type":"point","x":-112800.17970485282,"y":6813245.835186653,"spatialReference":3857},"attributes":{"OID":13,"Time":14}},{"geometry":{"type":"point","x":-112750.70252256513,"y":6813237.10391919,"spatialReference":3857},"attributes":{"OID":14,"Time":15}},{"geometry":{"type":"point","x":-112721.59829769001,"y":6813164.343357002,"spatialReference":3857},"attributes":{"OID":15,"Time":16}},{"geometry":{"type":"point","x":-112715.77745271499,"y":6813097.40363979,"spatialReference":3857},"attributes":{"OID":16,"Time":17}},{"geometry":{"type":"point","x":-112689.58365032739,"y":6813059.568147453,"spatialReference":3857},"attributes":{"OID":17,"Time":18}},{"geometry":{"type":"point","x":-112637.19604555218,"y":6813053.747302477,"spatialReference":3857},"attributes":{"OID":18,"Time":19}},{"geometry":{"type":"point","x":-112599.36055321453,"y":6813129.418287152,"spatialReference":3857},"attributes":{"OID":19,"Time":20}},{"geometry":{"type":"point","x":-112581.89801828946,"y":6813213.82053929,"spatialReference":3857},"attributes":{"OID":20,"Time":21}},{"geometry":{"type":"point","x":-112581.89801828946,"y":6813292.401946453,"spatialReference":3857},"attributes":{"OID":21,"Time":22}},{"geometry":{"type":"point","x":-112602.27097570203,"y":6813365.162508641,"spatialReference":3857},"attributes":{"OID":22,"Time":23}},{"geometry":{"type":"point","x":-112680.85238286485,"y":6813458.2960282415,"spatialReference":3857},"attributes":{"OID":23,"Time":24}},{"geometry":{"type":"point","x":-112759.43379002767,"y":6813496.131520579,"spatialReference":3857},"attributes":{"OID":24,"Time":25}},{"geometry":{"type":"point","x":-112884.58195699066,"y":6813612.548420079,"spatialReference":3857},"attributes":{"OID":25,"Time":26}},{"geometry":{"type":"point","x":-113102.86364355404,"y":6813801.725881767,"spatialReference":3857},"attributes":{"OID":26,"Time":27}},{"geometry":{"type":"point","x":-113315.3244851424,"y":6813967.619963556,"spatialReference":3857},"attributes":{"OID":27,"Time":28}},{"geometry":{"type":"point","x":-113385.17462484266,"y":6814017.097145843,"spatialReference":3857},"attributes":{"OID":28,"Time":29}},{"geometry":{"type":"point","x":-113452.11434205544,"y":6814066.574328131,"spatialReference":3857},"attributes":{"OID":29,"Time":30}},{"geometry":{"type":"point","x":-113571.44166404342,"y":6814014.186723355,"spatialReference":3857},"attributes":{"OID":30,"Time":31}},{"geometry":{"type":"point","x":-113597.63546643102,"y":6813906.501091317,"spatialReference":3857},"attributes":{"OID":31,"Time":32}},{"geometry":{"type":"point","x":-113618.0084238436,"y":6813833.74052913,"spatialReference":3857},"attributes":{"OID":32,"Time":33}},{"geometry":{"type":"point","x":-113740.24616831909,"y":6813851.203064055,"spatialReference":3857},"attributes":{"OID":33,"Time":34}},{"geometry":{"type":"point","x":-113734.42532334407,"y":6813918.142781268,"spatialReference":3857},"attributes":{"OID":34,"Time":35}},{"geometry":{"type":"point","x":-113705.32109846895,"y":6814008.365878381,"spatialReference":3857},"attributes":{"OID":35,"Time":36}},{"geometry":{"type":"point","x":-113492.8602568806,"y":6814302.318549619,"spatialReference":3857},"attributes":{"OID":36,"Time":37}},{"geometry":{"type":"point","x":-113361.89124494257,"y":6814343.064464444,"spatialReference":3857},"attributes":{"OID":37,"Time":38}},{"geometry":{"type":"point","x":-113254.20561290464,"y":6814366.347844345,"spatialReference":3857},"attributes":{"OID":38,"Time":39}},{"geometry":{"type":"point","x":-113134.87829091666,"y":6814383.8103792695,"spatialReference":3857},"attributes":{"OID":39,"Time":40}},{"geometry":{"type":"point","x":-113012.64054644118,"y":6814383.8103792695,"spatialReference":3857},"attributes":{"OID":40,"Time":41}},{"geometry":{"type":"point","x":-112666.3002704273,"y":6814430.37713907,"spatialReference":3857},"attributes":{"OID":41,"Time":42}},{"geometry":{"type":"point","x":-112596.45013072701,"y":6814401.2729141945,"spatialReference":3857},"attributes":{"OID":42,"Time":43}},{"geometry":{"type":"point","x":-112477.12280873903,"y":6813976.351231018,"spatialReference":3857},"attributes":{"OID":43,"Time":44}},{"geometry":{"type":"point","x":-112439.28731640139,"y":6813822.098839181,"spatialReference":3857},"attributes":{"OID":44,"Time":45}},{"geometry":{"type":"point","x":-112413.09351401379,"y":6813548.5191253545,"spatialReference":3857},"attributes":{"OID":45,"Time":46}},{"geometry":{"type":"point","x":-112363.61633172608,"y":6813472.848140679,"spatialReference":3857},"attributes":{"OID":46,"Time":47}},{"geometry":{"type":"point","x":-112346.15379680101,"y":6813379.714621079,"spatialReference":3857},"attributes":{"OID":47,"Time":48}},{"geometry":{"type":"point","x":-112381.07886665115,"y":6813292.401946453,"spatialReference":3857},"attributes":{"OID":48,"Time":49}},{"geometry":{"type":"point","x":-112319.95999441341,"y":6812986.807585265,"spatialReference":3857},"attributes":{"OID":49,"Time":50}},{"geometry":{"type":"point","x":-112334.51210685098,"y":6812876.211530739,"spatialReference":3857},"attributes":{"OID":50,"Time":51}},{"geometry":{"type":"point","x":-112418.91435898881,"y":6812809.271813527,"spatialReference":3857},"attributes":{"OID":51,"Time":52}},{"geometry":{"type":"point","x":-112602.27097570205,"y":6812692.854914026,"spatialReference":3857},"attributes":{"OID":52,"Time":53}},{"geometry":{"type":"point","x":-112817.64223977791,"y":6812297.037455725,"spatialReference":3857},"attributes":{"OID":53,"Time":54}},{"geometry":{"type":"point","x":-112881.67153450317,"y":6812183.530978711,"spatialReference":3857},"attributes":{"OID":54,"Time":55}},{"geometry":{"type":"point","x":-112925.32787181584,"y":6812090.397459111,"spatialReference":3857},"attributes":{"OID":55,"Time":56}},{"geometry":{"type":"point","x":-112998.08843400363,"y":6811953.607602198,"spatialReference":3857},"attributes":{"OID":56,"Time":57}},{"geometry":{"type":"point","x":-113085.40110862898,"y":6811834.28028021,"spatialReference":3857},"attributes":{"OID":57,"Time":58}},{"geometry":{"type":"point","x":-113332.78702006747,"y":6811621.819438621,"spatialReference":3857},"attributes":{"OID":58,"Time":59}},{"geometry":{"type":"point","x":-113504.50194683069,"y":6811840.101125184,"spatialReference":3857},"attributes":{"OID":59,"Time":60}},{"geometry":{"type":"point","x":-113594.72504394354,"y":6811965.249292147,"spatialReference":3857},"attributes":{"OID":60,"Time":61}},{"geometry":{"type":"point","x":-113737.33574583162,"y":6812128.232951448,"spatialReference":3857},"attributes":{"OID":61,"Time":62}},{"geometry":{"type":"point","x":-113780.9920831443,"y":6812166.068443786,"spatialReference":3857},"attributes":{"OID":62,"Time":63}},{"geometry":{"type":"point","x":-113850.84222284457,"y":6812151.516331349,"spatialReference":3857},"attributes":{"OID":63,"Time":64}},{"geometry":{"type":"point","x":-113975.99038980757,"y":6812230.097738511,"spatialReference":3857},"attributes":{"OID":64,"Time":65}},{"geometry":{"type":"point","x":-114010.91545965771,"y":6812340.693793037,"spatialReference":3857},"attributes":{"OID":65,"Time":66}},{"geometry":{"type":"point","x":-113999.27376970767,"y":6812422.1856226865,"spatialReference":3857},"attributes":{"OID":66,"Time":67}},{"geometry":{"type":"point","x":-113961.43827737002,"y":6812471.662804974,"spatialReference":3857},"attributes":{"OID":67,"Time":68}},{"geometry":{"type":"point","x":-113909.0506725948,"y":6812529.871254724,"spatialReference":3857},"attributes":{"OID":68,"Time":69}}],
+          objectIdField: "OID",
+          fields: [
+            {
+              name: "Time",
+              type: "double"
+            }
+          ]
+        });
+
+        const imageryLayer = new TileLayer({
+          url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer",
+          effect: "brightness(20%)"
+        });
+
+        const vectorTileLayer = new VectorTileLayer({
+          opacity: 0.5,
+          url: "https://www.arcgis.com/sharing/rest/content/items/5e9b3685f4c24d8781073dd928ebda50/resources/styles/root.json"
+        });
+
+        const basemap = new Basemap({
+          baseLayers: [
+            imageryLayer,
+            vectorTileLayer
+          ]
+        });
+
+        const map = new Map({
+          basemap,//: "satellite",
+          layers: [
+            mediaLayer,
+            featureLayer
+          ]
+        });
+
+        const view = new MapView({
+          container: "viewDiv",
+          map: map,
+          constraints: {
+            snapToZoom: false,
+          },
+          scale: 11000,
+          rotation: -90,
+          center: [-1.0147, 52.0733]
+        });
+
+        const points = [];
+        window.points = points;
+
+        let OID = 0;
+          
+        view.on("click", (evt) => {
+          const { x, y } = view.toMap(evt);
+
+          points.push({
+            geometry: {
+              type: "point",
+              x,
+              y,
+              spatialReference: 3857
+            },
+            attributes: {
+              OID,
+              Time: OID + 1
+            }
+          });
+          
+          OID++;
+        });
+      });
+    </script>
+  </head>
+
+  <body>
+    <div id="viewDiv"></div>
+  </body>
+</html>

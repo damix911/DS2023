@@ -1,0 +1,284 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>Animated CIM Markers</title>
+    <style>
+      html,
+      body,
+      #viewDiv {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+      }
+    </style>
+
+    <link rel="stylesheet" href="https://js.arcgis.com/4.26/esri/themes/light/main.css" />
+    <script src="https://js.arcgis.com/4.26/"></script>
+
+    <script>
+      require(["esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/layers/VectorTileLayer", "esri/Basemap"], (Map, MapView, FeatureLayer, VectorTileLayer, Basemap) => {
+        const star = [];
+
+        for (let i = 0; i <= 10; i++) {
+          const radius = i % 2 ? 2 : 3;
+          const radians = 2 * Math.PI * i / 10;
+
+          star.push([
+            radius * Math.sin(radians),
+            radius * Math.cos(radians)
+          ]);
+        }
+        
+        const featureLayer = new FeatureLayer({
+          effect: "bloom(0.5, 0.1px, 15%)",
+          renderer: {
+            type: "simple",
+            symbol: {
+              type: "cim",
+              data: {
+                type: "CIMSymbolReference",
+                symbol: {
+                  type: "CIMPointSymbol",
+                  symbolLayers: [
+                    {
+                      type: "CIMPictureMarker",
+                      url: "images/arrow.gif",
+                      size: 40,
+                      offsetX: -12,
+                      offsetY: 12,
+                      tintColor: [255, 128, 0, 255],
+                      animatedSymbolProperties: {
+                        primitiveName: "Sell"
+                      }
+                    },
+                    {
+                      type: "CIMPictureMarker",
+                      url: "images/arrow.gif",
+                      size: 40,
+                      rotation: 180,
+                      offsetX: 12,
+                      offsetY: 12,
+                      tintColor: [128, 255, 128, 255],
+                      animatedSymbolProperties: {
+                        primitiveName: "Buy"
+                      }
+                    },
+                    {
+                      type: "CIMVectorMarker",
+                      enable: true,
+                      frame: {
+                        xmin: -5,
+                        ymin: -5,
+                        xmax: 5,
+                        ymax: 5
+                      },
+                      "scaleSymbolsProportionally": true,
+                      "respectFrame": true,
+                      size: 20,
+                      markerGraphics: [
+                        {
+                          type: "CIMMarkerGraphic",
+                          geometry: {
+                            rings: [star]
+                          },
+                          symbol: {
+                            type: "CIMPolygonSymbol",
+                            symbolLayers: [
+                              // {
+                              //   type: "CIMSolidStroke",
+                              //   color: [0, 0, 0, 255],
+                              //   width: 1
+                              // },
+                              {
+                                type: "CIMSolidFill",
+                                color: [250, 200, 20, 255]
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "type": "CIMMarkerGraphic",
+                          "geometry": {
+                            "x": 0,
+                            "y": 0
+                          },
+                          "primitiveName": "Text",
+                          "symbol": {
+                            "type": "CIMTextSymbol",
+                            "fontFamilyName": "Arial",
+                            "fontStyleName": "Bold",
+                            "callout": {
+                              type: "CIMBackgroundCallout",
+                              margin: {
+                                type: "CIMTextMargin",
+                                left: 10,
+                                right: 10,
+                                top: 10,
+                                bottom: 10
+                              },
+                              backgroundSymbol: {
+                                "type": "CIMPolygonSymbol",
+                                "symbolLayers": [
+                                  {
+                                    "type": "CIMSolidStroke",
+                                    "enable": true,
+                                    "width": 1,
+                                    "color": [20, 40, 120, 255]
+                                  },
+                                  {
+                                    "type": "CIMSolidFill",
+                                    "enable": true,
+                                    "color": [220, 230, 240, 255]
+                                  }
+                                ]
+                              }
+                            },
+                            "height": 4,
+                            "horizontalAlignment": "Center",
+                            "offsetX": 0,
+                            "offsetY": -10,
+                            "symbol": {
+                              "type": "CIMPolygonSymbol",
+                              "symbolLayers": [
+                                {
+                                  "type": "CIMSolidFill",
+                                  "enable": true,
+                                  "color": [0, 0, 0, 255]
+                                }
+                              ]
+                            },
+                            "verticalAlignment": "Center",
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                primitiveOverrides: [
+                  {
+                    type: "CIMPrimitiveOverride",
+                    primitiveName: "Sell",
+                    propertyName: "Duration",
+                    valueExpressionInfo: {
+                      type: "CIMExpressionInfo",
+                      expression: "1 / (0.1 + $feature.SellRate)"
+                    }
+                  },
+                  {
+                    type: "CIMPrimitiveOverride",
+                    primitiveName: "Buy",
+                    propertyName: "Duration",
+                    valueExpressionInfo: {
+                      type: "CIMExpressionInfo",
+                      expression: "1 / (0.1 + $feature.BuyRate)"
+                    }
+                  },
+                  {
+                    type: "CIMPrimitiveOverride",
+                    primitiveName: "Text",
+                    propertyName: "TextString",
+                    valueExpressionInfo: {
+                      type: "CIMExpressionInfo",
+                      expression: "$feature.Name"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          source: [
+            {
+              geometry: {
+                type: "point",
+                x: 10.7522,
+                y: 59.9139,
+                spatialReference: {
+                  wkid: 4326
+                }
+              },
+              attributes: {
+                OID: 1,
+                SellRate: 1,
+                BuyRate: 100,
+                Name: "Norway"
+              }
+            },
+            {
+              geometry: {
+                type: "point",
+                x: 18.0686,
+                y: 59.3293,
+                spatialReference: {
+                  wkid: 4326
+                }
+              },
+              attributes: {
+                OID: 2,
+                SellRate: 5,
+                BuyRate: 1,
+                Name: "Sweden"
+              }
+            },
+            {
+              geometry: {
+                type: "point",
+                x: 12.5683,
+                y: 55.6761,
+                spatialReference: {
+                  wkid: 4326
+                }
+              },
+              attributes: {
+                OID: 3,
+                SellRate: 10,
+                BuyRate: 3,
+                Name: "Denmark"
+              }
+            }
+          ],
+          objectIdField: "OID",
+          fields: [
+            {
+              name: "SellRate",
+              type: "double"
+            },
+            {
+              name: "BuyRate",
+              type: "double"
+            },
+            {
+              name: "Name",
+              type: "string"
+            }
+          ]
+        });
+
+        const basemap = new Basemap({
+          baseLayers: [
+            new VectorTileLayer({
+              url: "https://www.arcgis.com/sharing/rest/content/items/5e9b3685f4c24d8781073dd928ebda50/resources/styles/root.json"
+            })
+          ]
+        });
+
+        const map = new Map({
+          basemap,
+          layers: [featureLayer]
+        });
+
+        const view = new MapView({
+          container: "viewDiv",
+          map: map,
+          zoom: 4,
+          center: [15, 60]
+        });
+      });
+    </script>
+  </head>
+
+  <body>
+    <div id="viewDiv"></div>
+  </body>
+</html>
