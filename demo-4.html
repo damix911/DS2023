@@ -70,10 +70,11 @@
         async function highlight(feature) {
           const { geometry } = feature;
 
+          // TODO! Consider putting these together.
           const fill = new Graphic({
             geometry,
             symbol: fillSymbol
-          })
+          });
           
           const outline = new Graphic({
             geometry,

@@ -64,6 +64,7 @@
             r1.push([5 * si, 5 * co]);
             r2.push([10 * si, 10 * co]);
             
+            // TODO! Consider converting this to separate symbol layers.
             labels.push({
               type: "CIMMarkerGraphic",
               geometry: {
@@ -284,6 +285,7 @@
             for (let c = 0; c < 3; c++) {
               for (let g = 0; g < 3; g++) {
                 for (let b = 0; b < 3; b++) {
+                  // TODO! Convert to Arcade.
                   const DietCode = "Diet_" + m + f + c + g + b;
                   
                   uniqueValueInfos.push({
