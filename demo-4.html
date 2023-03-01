@@ -34,7 +34,7 @@
             "markerPlacement": {
               "type": "CIMMarkerPlacementAlongLineSameSize",
               "placePerPart": true,
-              "angleToLine": false,
+              "angleToLine": true,
               "endings": "NoConstraint",
               "placementTemplate": [
                 4 + primeNumbers[i]
@@ -43,7 +43,7 @@
             "invertBackfaceTexture": true,
             "scaleX": 1,
             "textureFilter": "Picture",
-            "url": "images/pulse.gif",
+            "url": "images/flames.gif",
             tintColor: [50 + i * 20, 50 + i * 20, 50 + i * 20, 255],
             animatedSymbolProperties: {
               startTimeOffset: i / 5
@@ -54,7 +54,7 @@
         const featureLayer = new FeatureLayer({
           url: "https://services2.arcgis.com/FiaPA4ga0iQKduv3/arcgis/rest/services/Earthquake_Faults_and_Folds_in_the_USA/FeatureServer",
           effect: "bloom(1.6, 1px, 0)",
-          blendMode: "normal",
+          blendMode: "plus",
           renderer: {
             type: "simple",
             symbol: {
