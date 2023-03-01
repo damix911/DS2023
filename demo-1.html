@@ -2,7 +2,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
-    <title>Animated CIM Markers</title>
+    <title>Intro to MapView - Create a 2D map | Sample | ArcGIS Maps SDK for JavaScript 4.26</title>
     <style>
       html,
       body,
@@ -18,261 +18,377 @@
     <script src="https://js.arcgis.com/4.26/"></script>
 
     <script>
-      require(["esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/layers/VectorTileLayer", "esri/Basemap"], (Map, MapView, FeatureLayer, VectorTileLayer, Basemap) => {
-        const star = [];
-
-        for (let i = 0; i <= 10; i++) {
-          const radius = i % 2 ? 2 : 3;
-          const radians = 2 * Math.PI * i / 10;
-
-          star.push([
-            radius * Math.sin(radians),
-            radius * Math.cos(radians)
-          ]);
+      require(["esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer"], (Map, MapView, FeatureLayer) => {
+        function createIconUrl(emoji) {
+          const canvas = document.createElement("canvas");
+          canvas.width = 32;
+          canvas.height = 32;
+          const ctx = canvas.getContext("2d");
+          ctx.textBaseline = "middle";
+          ctx.textAlign = "center";
+          ctx.font = "24px sans-serif";
+          ctx.fillText(emoji, canvas.width / 2, canvas.height / 2);
+          return canvas.toDataURL("png");
         }
         
-        const featureLayer = new FeatureLayer({
-          effect: "bloom(0.5, 0.1px, 15%)",
-          renderer: {
-            type: "simple",
-            symbol: {
-              type: "cim",
-              data: {
-                type: "CIMSymbolReference",
-                symbol: {
-                  type: "CIMPointSymbol",
-                  symbolLayers: [
-                    {
-                      type: "CIMPictureMarker",
-                      url: "images/arrow.gif",
-                      size: 40,
-                      offsetX: -12,
-                      offsetY: 12,
-                      tintColor: [255, 128, 0, 255],
-                      animatedSymbolProperties: {
-                        primitiveName: "Sell"
-                      }
+        const iconUrls = [
+          createIconUrl("🥩"),
+          createIconUrl("🐟"),
+          createIconUrl("🍞"),
+          createIconUrl("🥬"),
+          createIconUrl("🫘")
+        ];
+        
+        function createPentagon(code) {
+          const numbers = [];
+          
+          for (const c of code.slice(5)) {
+            const n = c.charCodeAt(0) - "0".charCodeAt(0);
+            numbers.push(n);
+          }
+          
+          const data = [];
+          const back = [];
+          const r1 = [];
+          const r2 = [];
+          const labels = [];
+          
+          for (let i = 0; i < numbers.length; i++) {
+            const co = Math.cos(2 * Math.PI * i / numbers.length);
+            const si = Math.sin(2 * Math.PI * i / numbers.length);
+            
+            const radius = numbers[i] * 5;
+            
+            data.push([(radius + 5) * si, (radius + 5) * co]);
+            back.push([15 * si, 15 * co]);
+            r1.push([5 * si, 5 * co]);
+            r2.push([10 * si, 10 * co]);
+            
+            labels.push({
+              type: "CIMMarkerGraphic",
+              geometry: {
+                type: "point",
+                x: 22 * si,
+                y: 22 * co
+              },
+              symbol: {
+                type: "CIMPointSymbol",
+                symbolLayers: [
+                  {
+                    "type": "CIMPictureMarker",
+                    "enable": true,
+                    "anchorPoint": {
+                      "x": 0,
+                      "y": 0
                     },
-                    {
-                      type: "CIMPictureMarker",
-                      url: "images/arrow.gif",
-                      size: 40,
-                      rotation: 180,
-                      offsetX: 12,
-                      offsetY: 12,
-                      tintColor: [128, 255, 128, 255],
-                      animatedSymbolProperties: {
-                        primitiveName: "Buy"
-                      }
-                    },
-                    {
-                      type: "CIMVectorMarker",
-                      enable: true,
-                      frame: {
-                        xmin: -5,
-                        ymin: -5,
-                        xmax: 5,
-                        ymax: 5
-                      },
-                      "scaleSymbolsProportionally": true,
-                      "respectFrame": true,
-                      size: 20,
-                      markerGraphics: [
-                        {
-                          type: "CIMMarkerGraphic",
-                          geometry: {
-                            rings: [star]
-                          },
-                          symbol: {
-                            type: "CIMPolygonSymbol",
-                            symbolLayers: [
-                              // {
-                              //   type: "CIMSolidStroke",
-                              //   color: [0, 0, 0, 255],
-                              //   width: 1
-                              // },
-                              {
-                                type: "CIMSolidFill",
-                                color: [250, 200, 20, 255]
-                              }
-                            ]
-                          }
-                        },
-                        {
-                          "type": "CIMMarkerGraphic",
-                          "geometry": {
-                            "x": 0,
-                            "y": 0
-                          },
-                          "primitiveName": "Text",
-                          "symbol": {
-                            "type": "CIMTextSymbol",
-                            "fontFamilyName": "Arial",
-                            "fontStyleName": "Bold",
-                            "callout": {
-                              type: "CIMBackgroundCallout",
-                              margin: {
-                                type: "CIMTextMargin",
-                                left: 10,
-                                right: 10,
-                                top: 10,
-                                bottom: 10
-                              },
-                              backgroundSymbol: {
-                                "type": "CIMPolygonSymbol",
-                                "symbolLayers": [
-                                  {
-                                    "type": "CIMSolidStroke",
-                                    "enable": true,
-                                    "width": 1,
-                                    "color": [20, 40, 120, 255]
-                                  },
-                                  {
-                                    "type": "CIMSolidFill",
-                                    "enable": true,
-                                    "color": [220, 230, 240, 255]
-                                  }
-                                ]
-                              }
-                            },
-                            "height": 4,
-                            "horizontalAlignment": "Center",
-                            "offsetX": 0,
-                            "offsetY": -10,
-                            "symbol": {
-                              "type": "CIMPolygonSymbol",
-                              "symbolLayers": [
-                                {
-                                  "type": "CIMSolidFill",
-                                  "enable": true,
-                                  "color": [0, 0, 0, 255]
-                                }
-                              ]
-                            },
-                            "verticalAlignment": "Center",
-                          }
-                        }
-                      ]
-                    }
-                  ]
-                },
-                primitiveOverrides: [
-                  {
-                    type: "CIMPrimitiveOverride",
-                    primitiveName: "Sell",
-                    propertyName: "Duration",
-                    valueExpressionInfo: {
-                      type: "CIMExpressionInfo",
-                      expression: "1 / (0.1 + $feature.SellRate)"
-                    }
-                  },
-                  {
-                    type: "CIMPrimitiveOverride",
-                    primitiveName: "Buy",
-                    propertyName: "Duration",
-                    valueExpressionInfo: {
-                      type: "CIMExpressionInfo",
-                      expression: "1 / (0.1 + $feature.BuyRate)"
-                    }
-                  },
-                  {
-                    type: "CIMPrimitiveOverride",
-                    primitiveName: "Text",
-                    propertyName: "TextString",
-                    valueExpressionInfo: {
-                      type: "CIMExpressionInfo",
-                      expression: "$feature.Name"
-                    }
+                    "size": 14,
+                    "scaleX": 1,
+                    "tintColor": [255, 255, 255, 255],
+                    "url": iconUrls[i]
                   }
                 ]
               }
-            }
-          },
-          source: [
-            {
-              geometry: {
-                type: "point",
-                x: 10.7522,
-                y: 59.9139,
-                spatialReference: {
-                  wkid: 4326
-                }
+            });
+          }
+          
+          data.push([data[0][0], data[0][1]]);
+          back.push([back[0][0], back[0][1]]);
+          r1.push([r1[0][0], r1[0][1]]);
+          r2.push([r2[0][0], r2[0][1]]);
+          
+          return {
+            type: "CIMPointSymbol",
+            symbolLayers: [{
+              type: "CIMVectorMarker",
+              enable: true,
+              size: 16,
+              frame: {
+                xmin: -8,
+                ymin: -8,
+                xmax: 8,
+                ymax: 8
               },
-              attributes: {
-                OID: 1,
-                SellRate: 1,
-                BuyRate: 100,
-                Name: "Norway"
+              "scaleSymbolsProportionally": true,
+   "respectFrame": true,
+              markerGraphics: [
+                ...labels,
+                {
+                  type: "CIMMarkerGraphic",
+                  geometry: {
+                    rings: [back]
+                  },
+                  symbol: {
+                    type: "CIMPolygonSymbol",
+                    symbolLayers: [
+                      {
+                        type: "CIMSolidStroke",
+                        width: 1,
+                        color: [150, 150, 150, 240]
+                      },
+                      {
+                        type: "CIMSolidFill",
+                        color: [240, 240, 240, 200]
+                      }
+                    ]
+                  }
+                },
+                {
+                  type: "CIMMarkerGraphic",
+                  geometry: {
+                    rings: [r1]
+                  },
+                  symbol: {
+                    type: "CIMPolygonSymbol",
+                    symbolLayers: [
+                      {
+                        type: "CIMSolidStroke",
+                        effects: [{
+                          type: "CIMGeometricEffectDashes",
+                          dashTemplate: [2, 2],
+                          lineDashEnding: "FullGap",
+                          controlPointEnding: "NoConstraint"
+                        }],
+                        width: 0.75,
+                        color: [255, 255, 255, 220]
+                      }
+                    ]
+                  }
+                },
+                {
+                  type: "CIMMarkerGraphic",
+                  geometry: {
+                    rings: [r2]
+                  },
+                  symbol: {
+                    type: "CIMPolygonSymbol",
+                    symbolLayers: [
+                      {
+                        type: "CIMSolidStroke",
+                        effects: [{
+                          type: "CIMGeometricEffectDashes",
+                          dashTemplate: [2, 2],
+                          lineDashEnding: "FullGap",
+                          controlPointEnding: "NoConstraint"
+                        }],
+                        width: 0.75,
+                        color: [255, 255, 255, 220]
+                      }
+                    ]
+                  }
+                },
+                {
+                  type: "CIMMarkerGraphic",
+                  geometry: {
+                    rings: [data]
+                  },
+                  symbol: {
+                    type: "CIMPolygonSymbol",
+                    symbolLayers: [
+                      {
+                        type: "CIMSolidStroke",
+                        width: 1,
+                        color: [240, 94, 35, 240]
+                      },
+                      {
+                        type: "CIMSolidFill",
+                        color: [240, 94, 35, 60]
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "CIMMarkerGraphic",
+                  "geometry": {
+                    "x": 0,
+                    "y": 0
+                  },
+                  "primitiveName": "Text",
+                  "symbol": {
+                    "type": "CIMTextSymbol",
+                    "fontFamilyName": "Arial",
+                    "fontStyleName": "Bold",
+                    "callout": {
+                      type: "CIMBackgroundCallout",
+                      backgroundSymbol: {
+                        "type": "CIMPolygonSymbol",
+                        "symbolLayers": [
+                          {
+                            "type": "CIMSolidStroke",
+                            "enable": true,
+                            "width": 1,
+                            "color": [20, 40, 120, 255]
+                          },
+                          {
+                            "type": "CIMSolidFill",
+                            "enable": true,
+                            "color": [220, 230, 240, 255]
+                          }
+                        ]
+                      }
+                    },
+                    "height": 8,
+                    "horizontalAlignment": "Center",
+                    "offsetX": 0,
+                    "offsetY": -42,
+                    "symbol": {
+                      "type": "CIMPolygonSymbol",
+                      "symbolLayers": [
+                        {
+                          "type": "CIMSolidFill",
+                          "enable": true,
+                          "color": [0, 0, 0, 255]
+                        }
+                      ]
+                    },
+                    "verticalAlignment": "Center",
+                  }
+                }
+              ]
+            }]
+          };
+        }
+        
+        function getDietCode(diet) {
+          const m = Math.round(diet.Meat / 100 * 2);
+          const f = Math.round(diet.Fish / 100 * 2);
+          const c = Math.round(diet.Carbs / 100 * 2);
+          const g = Math.round(diet.Greens / 100 * 2);
+          const b = Math.round(diet.Beans / 100 * 2);
+          return "Diet_" + m + f + c + g + b;
+        }
+        
+        function createFeature(Name, longitude, latitude, diet) {
+          const DietCode = getDietCode(diet);
+          
+          return {
+            geometry: {
+              type: "point",
+              x: longitude,
+              y: latitude,
+              spatialReference: {
+                wkid: 4326
               }
             },
-            {
-              geometry: {
-                type: "point",
-                x: 18.0686,
-                y: 59.3293,
-                spatialReference: {
-                  wkid: 4326
+            attributes: {
+              Name,
+              ...diet,
+              DietCode
+            }
+          };
+        }
+
+        const uniqueValueInfos = [];
+
+        for (let m = 0; m < 3; m++) {
+          for (let f = 0; f < 3; f++) {
+            for (let c = 0; c < 3; c++) {
+              for (let g = 0; g < 3; g++) {
+                for (let b = 0; b < 3; b++) {
+                  const DietCode = "Diet_" + m + f + c + g + b;
+                  
+                  uniqueValueInfos.push({
+                    value: DietCode,
+                    symbol: {
+                      type: "cim",
+                      data: {
+                        type: "CIMSymbolReference",
+                        symbol: createPentagon(DietCode),
+                        primitiveOverrides: [
+                          {
+                            type: "CIMPrimitiveOverride",
+                            primitiveName: "Text",
+                            propertyName: "TextString",
+                            valueExpressionInfo: {
+                              type: "CIMExpressionInfo",
+                              expression: "$feature.Name"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                  });
                 }
-              },
-              attributes: {
-                OID: 2,
-                SellRate: 5,
-                BuyRate: 1,
-                Name: "Sweden"
-              }
-            },
-            {
-              geometry: {
-                type: "point",
-                x: 12.5683,
-                y: 55.6761,
-                spatialReference: {
-                  wkid: 4326
-                }
-              },
-              attributes: {
-                OID: 3,
-                SellRate: 10,
-                BuyRate: 3,
-                Name: "Denmark"
               }
             }
-          ],
+          }
+        }
+        
+        const featureLayer = new FeatureLayer({
+          effect: "drop-shadow(2px, 2px, 3px)",
           objectIdField: "OID",
           fields: [
             {
-              name: "SellRate",
-              type: "double"
-            },
-            {
-              name: "BuyRate",
-              type: "double"
-            },
-            {
               name: "Name",
               type: "string"
+            },
+            {
+              name: "Meat",
+              type: "double"
+            },
+            {
+              name: "Fish",
+              type: "double"
+            },
+            {
+              name: "Carbs",
+              type: "double"
+            },
+            {
+              name: "Greens",
+              type: "double"
+            },
+            {
+              name: "Beans",
+              type: "double"
+            },
+            {
+              name: "DietCode",
+              type: "string"
             }
-          ]
-        });
-
-        const basemap = new Basemap({
-          baseLayers: [
-            new VectorTileLayer({
-              url: "https://www.arcgis.com/sharing/rest/content/items/5e9b3685f4c24d8781073dd928ebda50/resources/styles/root.json"
+          ],
+          renderer: {
+            type: "unique-value",
+            field: "DietCode",
+            defaultSymbol: {
+              type: "simple-marker"
+            },
+            uniqueValueInfos
+          },
+          source: [
+            createFeature("Norway", 10.7522, 59.9139, {
+              Meat: 10,
+              Fish: 100,
+              Carbs: 30,
+              Greens: 0,
+              Beans: 10
+            }),
+            createFeature("Sweden", 18.0686, 59.3293, {
+              Meat: 30,
+              Fish: 100,
+              Carbs: 30,
+              Greens: 20,
+              Beans: 20
+            }),
+            createFeature("Denmark", 12.5683, 55.6761, {
+              Meat: 100,
+              Fish: 10,
+              Carbs: 10,
+              Greens: 10,
+              Beans: 0
             })
           ]
         });
-
+      
         const map = new Map({
-          basemap,
+          basemap: "topo-vector",
           layers: [featureLayer]
         });
 
         const view = new MapView({
           container: "viewDiv",
-          map: map,
+          map,
           scale: 10000000,
-          center: [15, 60]
+          center: [10.7522, 59.9139]
         });
       });
     </script>
