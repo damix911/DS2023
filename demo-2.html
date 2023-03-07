@@ -32,7 +32,6 @@
         }
         
         const featureLayer = new FeatureLayer({
-          effect: "bloom(0.5, 0.1px, 15%)",
           renderer: {
             type: "simple",
             symbol: {
@@ -44,32 +43,12 @@
                   symbolLayers: [
                     {
                       type: "CIMPictureMarker",
-                      url: "images/bike.gif",
-                      size: 30,
-                      offsetX: -16,
-                      offsetY: 42,
-                      animatedSymbolProperties: {
-                        primitiveName: "Bikes"
-                      }
-                    },
-                    {
-                      type: "CIMPictureMarker",
-                      url: "images/car.gif",
-                      size: 30,
+                      url: "images/puppy-and-house.gif",
+                      size: 48,
                       offsetX: 0,
-                      offsetY: 42,
+                      offsetY: 30,
                       animatedSymbolProperties: {
-                        primitiveName: "Cars"
-                      }
-                    },
-                    {
-                      type: "CIMPictureMarker",
-                      url: "images/truck.gif",
-                      size: 30,
-                      offsetX: 16,
-                      offsetY: 42,
-                      animatedSymbolProperties: {
-                        primitiveName: "Trucks"
+                        primitiveName: "AdoptionsPerDay"
                       }
                     },
                     {
@@ -93,11 +72,11 @@
                           symbol: {
                             type: "CIMPolygonSymbol",
                             symbolLayers: [
-                              // {
-                              //   type: "CIMSolidStroke",
-                              //   color: [0, 0, 0, 255],
-                              //   width: 1
-                              // },
+                              {
+                                type: "CIMSolidStroke",
+                                color: [0, 0, 0, 255],
+                                width: 0.5
+                              },
                               {
                                 type: "CIMSolidFill",
                                 color: [250, 200, 20, 255]
@@ -111,48 +90,50 @@
                             "x": 0,
                             "y": 0
                           },
-                          "primitiveName": "Text",
+                          "primitiveName": "Name",
                           "symbol": {
                             "type": "CIMTextSymbol",
                             "fontFamilyName": "Arial",
                             "fontStyleName": "Bold",
-                            "callout": {
-                              type: "CIMBackgroundCallout",
-                              margin: {
-                                type: "CIMTextMargin",
-                                left: 10,
-                                right: 10,
-                                top: 10,
-                                bottom: 10
-                              },
-                              backgroundSymbol: {
-                                "type": "CIMPolygonSymbol",
-                                "symbolLayers": [
-                                  {
-                                    "type": "CIMSolidStroke",
-                                    "enable": true,
-                                    "width": 1,
-                                    "color": [20, 40, 120, 255]
-                                  },
-                                  {
-                                    "type": "CIMSolidFill",
-                                    "enable": true,
-                                    "color": [220, 230, 240, 255]
-                                  }
-                                ]
-                              }
-                            },
-                            "height": 4,
+                            "height": 6,
                             "horizontalAlignment": "Center",
                             "offsetX": 0,
-                            "offsetY": 10,
+                            "offsetY": -7,
                             "symbol": {
                               "type": "CIMPolygonSymbol",
                               "symbolLayers": [
                                 {
                                   "type": "CIMSolidFill",
                                   "enable": true,
-                                  "color": [0, 0, 0, 255]
+                                  "color": [255, 255, 255, 255]
+                                }
+                              ]
+                            },
+                            "verticalAlignment": "Center",
+                          }
+                        },
+                        {
+                          "type": "CIMMarkerGraphic",
+                          "geometry": {
+                            "x": 0,
+                            "y": 0
+                          },
+                          "primitiveName": "Stats",
+                          "symbol": {
+                            "type": "CIMTextSymbol",
+                            "fontFamilyName": "Arial",
+                            "fontStyleName": "Italic",
+                            "height": 5,
+                            "horizontalAlignment": "Center",
+                            "offsetX": 0,
+                            "offsetY": -15,
+                            "symbol": {
+                              "type": "CIMPolygonSymbol",
+                              "symbolLayers": [
+                                {
+                                  "type": "CIMSolidFill",
+                                  "enable": true,
+                                  "color": [255, 255, 255, 255]
                                 }
                               ]
                             },
@@ -166,65 +147,29 @@
                 primitiveOverrides: [
                   {
                     type: "CIMPrimitiveOverride",
-                    primitiveName: "Bikes",
+                    primitiveName: "AdoptionsPerDay",
                     propertyName: "Duration",
                     valueExpressionInfo: {
                       type: "CIMExpressionInfo",
-                      expression: "iif ($feature.Bikes > 50, 0.1, 2)"
+                      expression: "100 / $feature.AdoptionsPerDay"
                     }
                   },
                   {
                     type: "CIMPrimitiveOverride",
-                    primitiveName: "Bikes",
-                    propertyName: "PlayAnimation",
-                    valueExpressionInfo: {
-                      type: "CIMExpressionInfo",
-                      expression: "$feature.Bikes > 0"
-                    }
-                  },
-                  {
-                    type: "CIMPrimitiveOverride",
-                    primitiveName: "Cars",
-                    propertyName: "Duration",
-                    valueExpressionInfo: {
-                      type: "CIMExpressionInfo",
-                      expression: "iif($feature.Cars > 50, 0.1, 2)"
-                    }
-                  },
-                  {
-                    type: "CIMPrimitiveOverride",
-                    primitiveName: "Cars",
-                    propertyName: "PlayAnimation",
-                    valueExpressionInfo: {
-                      type: "CIMExpressionInfo",
-                      expression: "$feature.Cars > 0"
-                    }
-                  },
-                  {
-                    type: "CIMPrimitiveOverride",
-                    primitiveName: "Trucks",
-                    propertyName: "Duration",
-                    valueExpressionInfo: {
-                      type: "CIMExpressionInfo",
-                      expression: "iif($feature.Trucks > 50, 0.1, 2)"
-                    }
-                  },
-                  {
-                    type: "CIMPrimitiveOverride",
-                    primitiveName: "Trucks",
-                    propertyName: "PlayAnimation",
-                    valueExpressionInfo: {
-                      type: "CIMExpressionInfo",
-                      expression: "$feature.Trucks > 0"
-                    }
-                  },
-                  {
-                    type: "CIMPrimitiveOverride",
-                    primitiveName: "Text",
+                    primitiveName: "Name",
                     propertyName: "TextString",
                     valueExpressionInfo: {
                       type: "CIMExpressionInfo",
                       expression: "$feature.Name"
+                    }
+                  },
+                  {
+                    type: "CIMPrimitiveOverride",
+                    primitiveName: "Stats",
+                    propertyName: "TextString",
+                    valueExpressionInfo: {
+                      type: "CIMExpressionInfo",
+                      expression: "$feature.AdoptionsPerDay + ' adoptions per day'"
                     }
                   }
                 ]
@@ -235,72 +180,77 @@
             {
               geometry: {
                 type: "point",
-                x: 10.7522,
-                y: 59.9139,
+                x: -111.0937,
+                y: 34.0489,
                 spatialReference: {
                   wkid: 4326
                 }
               },
               attributes: {
                 OID: 1,
-                Bikes: 20,
-                Cars: 100,
-                Trucks: 5,
-                Name: "Norway"
+                AdoptionsPerDay: 19,
+                Name: "Arizona"
               }
             },
             {
               geometry: {
                 type: "point",
-                x: 18.0686,
-                y: 59.3293,
+                x: -111.0937,
+                y: 39.3210,
                 spatialReference: {
                   wkid: 4326
                 }
               },
               attributes: {
                 OID: 2,
-                Bikes: 80,
-                Cars: 40,
-                Trucks: 0,
-                Name: "Sweden"
+                AdoptionsPerDay: 65,
+                Name: "Utah"
               }
             },
             {
               geometry: {
                 type: "point",
-                x: 12.5683,
-                y: 55.6761,
+                x: -105.8701,
+                y: 34.5199,
                 spatialReference: {
                   wkid: 4326
                 }
               },
               attributes: {
                 OID: 3,
-                Bikes: 90,
-                Cars: 20,
-                Trucks: 10,
-                Name: "Denmark"
+                AdoptionsPerDay: 121,
+                Name: "New Mexico"
+              }
+            },
+            {
+              geometry: {
+                type: "point",
+                x: -105.7821,
+                y: 39.5501,
+                spatialReference: {
+                  wkid: 4326
+                }
+              },
+              attributes: {
+                OID: 4,
+                AdoptionsPerDay: 33,
+                Name: "Colorado"
               }
             }
           ],
           objectIdField: "OID",
           fields: [
             {
-              name: "Bikes",
-              type: "double"
-            },
-            {
-              name: "Cars",
-              type: "double"
-            },
-            {
-              name: "Trucks",
-              type: "double"
-            },
-            {
               name: "Name",
               type: "string"
+            },
+            {
+              name: "Stats",
+              type: "string"
+            },
+            {
+              name: "AdoptionsPerDay",
+              type: "integer"
             }
           ]
         });
@@ -321,8 +271,8 @@
         const view = new MapView({
           container: "viewDiv",
           map: map,
-          scale: 10000000,
-          center: [15, 60]
+          scale: 5000000,
+          center: [-109, 37]
         });
       });
     </script>
