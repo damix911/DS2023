@@ -1,8 +1,8 @@
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
-    <title>Intro to MapView - Create a 2D map | Sample | ArcGIS Maps SDK for JavaScript 4.26</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <title>Custom CIM Polygon Charts</title>
     <style>
       html,
       body,
@@ -13,12 +13,18 @@
         width: 100%;
       }
     </style>
-
-    <link rel="stylesheet" href="https://js.arcgis.com/4.26/esri/themes/light/main.css" />
+    <link rel="stylesheet" href="https://js.arcgis.com/4.26/esri/themes/light/main.css">
     <script src="https://js.arcgis.com/4.26/"></script>
-
     <script>
-      require(["esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer"], (Map, MapView, FeatureLayer) => {
+      require([
+        "esri/Map",
+        "esri/views/MapView",
+        "esri/layers/FeatureLayer"
+      ], (
+        Map,
+        MapView,
+        FeatureLayer
+      ) => {
         function createIconUrl(emoji) {
           const canvas = document.createElement("canvas");
           canvas.width = 32;
@@ -64,31 +70,17 @@
             r1.push([5 * si, 5 * co]);
             r2.push([10 * si, 10 * co]);
             
-            // TODO! Consider converting this to separate symbol layers.
             labels.push({
-              type: "CIMMarkerGraphic",
-              geometry: {
-                type: "point",
+              "type": "CIMPictureMarker",
+              "enable": true,
+              "anchorPoint": {
                 x: 22 * si,
                 y: 22 * co
               },
-              symbol: {
-                type: "CIMPointSymbol",
-                symbolLayers: [
-                  {
-                    "type": "CIMPictureMarker",
-                    "enable": true,
-                    "anchorPoint": {
-                      "x": 0,
-                      "y": 0
-                    },
-                    "size": 14,
-                    "scaleX": 1,
-                    "tintColor": [255, 255, 255, 255],
-                    "url": iconUrls[i]
-                  }
-                ]
-              }
+              "size": 14,
+              "scaleX": 1,
+              "tintColor": [255, 255, 255, 255],
+              "url": iconUrls[i]
             });
           }
           
@@ -99,153 +91,155 @@
           
           return {
             type: "CIMPointSymbol",
-            symbolLayers: [{
-              type: "CIMVectorMarker",
-              enable: true,
-              size: 16,
-              frame: {
-                xmin: -8,
-                ymin: -8,
-                xmax: 8,
-                ymax: 8
-              },
-              "scaleSymbolsProportionally": true,
-   "respectFrame": true,
-              markerGraphics: [
-                ...labels,
-                {
-                  type: "CIMMarkerGraphic",
-                  geometry: {
-                    rings: [back]
+            symbolLayers: [
+              ...labels,
+              {
+                type: "CIMVectorMarker",
+                enable: true,
+                size: 16,
+                frame: {
+                  xmin: -8,
+                  ymin: -8,
+                  xmax: 8,
+                  ymax: 8
+                },
+                "scaleSymbolsProportionally": true,
+    "respectFrame": true,
+                markerGraphics: [
+                  {
+                    type: "CIMMarkerGraphic",
+                    geometry: {
+                      rings: [back]
+                    },
+                    symbol: {
+                      type: "CIMPolygonSymbol",
+                      symbolLayers: [
+                        {
+                          type: "CIMSolidStroke",
+                          width: 1,
+                          color: [150, 150, 150, 240]
+                        },
+                        {
+                          type: "CIMSolidFill",
+                          color: [240, 240, 240, 200]
+                        }
+                      ]
+                    }
                   },
-                  symbol: {
-                    type: "CIMPolygonSymbol",
-                    symbolLayers: [
-                      {
-                        type: "CIMSolidStroke",
-                        width: 1,
-                        color: [150, 150, 150, 240]
+                  {
+                    type: "CIMMarkerGraphic",
+                    geometry: {
+                      rings: [r1]
+                    },
+                    symbol: {
+                      type: "CIMPolygonSymbol",
+                      symbolLayers: [
+                        {
+                          type: "CIMSolidStroke",
+                          effects: [{
+                            type: "CIMGeometricEffectDashes",
+                            dashTemplate: [2, 2],
+                            lineDashEnding: "FullGap",
+                            controlPointEnding: "NoConstraint"
+                          }],
+                          width: 0.75,
+                          color: [255, 255, 255, 220]
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    type: "CIMMarkerGraphic",
+                    geometry: {
+                      rings: [r2]
+                    },
+                    symbol: {
+                      type: "CIMPolygonSymbol",
+                      symbolLayers: [
+                        {
+                          type: "CIMSolidStroke",
+                          effects: [{
+                            type: "CIMGeometricEffectDashes",
+                            dashTemplate: [2, 2],
+                            lineDashEnding: "FullGap",
+                            controlPointEnding: "NoConstraint"
+                          }],
+                          width: 0.75,
+                          color: [255, 255, 255, 220]
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    type: "CIMMarkerGraphic",
+                    geometry: {
+                      rings: [data]
+                    },
+                    symbol: {
+                      type: "CIMPolygonSymbol",
+                      symbolLayers: [
+                        {
+                          type: "CIMSolidStroke",
+                          width: 1,
+                          color: [240, 94, 35, 240]
+                        },
+                        {
+                          type: "CIMSolidFill",
+                          color: [240, 94, 35, 60]
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "type": "CIMMarkerGraphic",
+                    "geometry": {
+                      "x": 0,
+                      "y": 0
+                    },
+                    "primitiveName": "Text",
+                    "symbol": {
+                      "type": "CIMTextSymbol",
+                      "fontFamilyName": "Arial",
+                      "fontStyleName": "Bold",
+                      "callout": {
+                        type: "CIMBackgroundCallout",
+                        backgroundSymbol: {
+                          "type": "CIMPolygonSymbol",
+                          "symbolLayers": [
+                            {
+                              "type": "CIMSolidStroke",
+                              "enable": true,
+                              "width": 1,
+                              "color": [20, 40, 120, 255]
+                            },
+                            {
+                              "type": "CIMSolidFill",
+                              "enable": true,
+                              "color": [220, 230, 240, 255]
+                            }
+                          ]
+                        }
                       },
-                      {
-                        type: "CIMSolidFill",
-                        color: [240, 240, 240, 200]
-                      }
-                    ]
-                  }
-                },
-                {
-                  type: "CIMMarkerGraphic",
-                  geometry: {
-                    rings: [r1]
-                  },
-                  symbol: {
-                    type: "CIMPolygonSymbol",
-                    symbolLayers: [
-                      {
-                        type: "CIMSolidStroke",
-                        effects: [{
-                          type: "CIMGeometricEffectDashes",
-                          dashTemplate: [2, 2],
-                          lineDashEnding: "FullGap",
-                          controlPointEnding: "NoConstraint"
-                        }],
-                        width: 0.75,
-                        color: [255, 255, 255, 220]
-                      }
-                    ]
-                  }
-                },
-                {
-                  type: "CIMMarkerGraphic",
-                  geometry: {
-                    rings: [r2]
-                  },
-                  symbol: {
-                    type: "CIMPolygonSymbol",
-                    symbolLayers: [
-                      {
-                        type: "CIMSolidStroke",
-                        effects: [{
-                          type: "CIMGeometricEffectDashes",
-                          dashTemplate: [2, 2],
-                          lineDashEnding: "FullGap",
-                          controlPointEnding: "NoConstraint"
-                        }],
-                        width: 0.75,
-                        color: [255, 255, 255, 220]
-                      }
-                    ]
-                  }
-                },
-                {
-                  type: "CIMMarkerGraphic",
-                  geometry: {
-                    rings: [data]
-                  },
-                  symbol: {
-                    type: "CIMPolygonSymbol",
-                    symbolLayers: [
-                      {
-                        type: "CIMSolidStroke",
-                        width: 1,
-                        color: [240, 94, 35, 240]
-                      },
-                      {
-                        type: "CIMSolidFill",
-                        color: [240, 94, 35, 60]
-                      }
-                    ]
-                  }
-                },
-                {
-                  "type": "CIMMarkerGraphic",
-                  "geometry": {
-                    "x": 0,
-                    "y": 0
-                  },
-                  "primitiveName": "Text",
-                  "symbol": {
-                    "type": "CIMTextSymbol",
-                    "fontFamilyName": "Arial",
-                    "fontStyleName": "Bold",
-                    "callout": {
-                      type: "CIMBackgroundCallout",
-                      backgroundSymbol: {
+                      "height": 8,
+                      "horizontalAlignment": "Center",
+                      "offsetX": 0,
+                      "offsetY": -42,
+                      "symbol": {
                         "type": "CIMPolygonSymbol",
                         "symbolLayers": [
                           {
-                            "type": "CIMSolidStroke",
-                            "enable": true,
-                            "width": 1,
-                            "color": [20, 40, 120, 255]
-                          },
-                          {
                             "type": "CIMSolidFill",
                             "enable": true,
-                            "color": [220, 230, 240, 255]
+                            "color": [0, 0, 0, 255]
                           }
                         ]
-                      }
-                    },
-                    "height": 8,
-                    "horizontalAlignment": "Center",
-                    "offsetX": 0,
-                    "offsetY": -42,
-                    "symbol": {
-                      "type": "CIMPolygonSymbol",
-                      "symbolLayers": [
-                        {
-                          "type": "CIMSolidFill",
-                          "enable": true,
-                          "color": [0, 0, 0, 255]
-                        }
-                      ]
-                    },
-                    "verticalAlignment": "Center",
+                      },
+                      "verticalAlignment": "Center",
+                    }
                   }
-                }
-              ]
-            }]
+                ]
+              }
+            ]
           };
         }
         
@@ -272,8 +266,7 @@
             },
             attributes: {
               Name,
-              ...diet,
-              DietCode
+              ...diet
             }
           };
         }
@@ -285,7 +278,6 @@
             for (let c = 0; c < 3; c++) {
               for (let g = 0; g < 3; g++) {
                 for (let b = 0; b < 3; b++) {
-                  // TODO! Convert to Arcade.
                   const DietCode = "Diet_" + m + f + c + g + b;
                   
                   uniqueValueInfos.push({
@@ -342,15 +334,19 @@
             {
               name: "Beans",
               type: "double"
-            },
-            {
-              name: "DietCode",
-              type: "string"
             }
           ],
           renderer: {
             type: "unique-value",
-            field: "DietCode",
+            valueExpression: `
+              var m = round($feature.Meat / 100 * 2);
+              var f = round($feature.Fish / 100 * 2);
+              var c = round($feature.Carbs / 100 * 2);
+              var g = round($feature.Greens / 100 * 2);
+              var b = round($feature.Beans / 100 * 2);
+
+              return "Diet_" + m + f + c + g + b;
+            `,
             defaultSymbol: {
               type: "simple-marker"
             },
